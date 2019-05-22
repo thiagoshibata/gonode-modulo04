@@ -3,8 +3,11 @@
 const Project = use("App/Models/Project");
 
 class ProjectController {
-  async index({ request, response, view }) {
-    const project = await Project.query().with('user').fetch();
+  async index({ request }) {
+    const { page } = request.get();
+    const project = await Project.query()
+      .with("user")
+      .paginate(page);
 
     return project;
   }
@@ -18,29 +21,29 @@ class ProjectController {
   }
 
   async show({ params }) {
-    const project = await Project.findOrFail(params.id)
+    const project = await Project.findOrFail(params.id);
 
-    await project.load('user')
-    await project.load('tasks')
+    await project.load("user");
+    await project.load("tasks");
 
-    return project
+    return project;
   }
 
   async update({ params, request }) {
-    const project = await Project.findOrFail(params.id)
+    const project = await Project.findOrFail(params.id);
     const data = request.only(["title", "description"]);
 
-    project.merge(data)
+    project.merge(data);
 
-    await project.save()
+    await project.save();
 
-    return project
+    return project;
   }
 
   async destroy({ params }) {
-    const project = await Project.findOrFail(params.id)
-    
-    project.delete()
+    const project = await Project.findOrFail(params.id);
+
+    project.delete();
   }
 }
 
